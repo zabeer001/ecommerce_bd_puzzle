@@ -11,15 +11,13 @@ use Symfony\Component\HttpFoundation\Response;
 class CategoryController extends Controller
 {
 
-    protected array $typeOfFields = ['textFields', 'imageFields'];
+    protected array $typeOfFields = ['textFields'];
 
     protected array $textFields = [
         'name',
         'description',
         'slug',
     ];
-
-
 
     /**
      * Validate the request data for category creation or update.
@@ -35,13 +33,6 @@ class CategoryController extends Controller
             'description' => 'nullable|string',
         ]);
     }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
 
     /**
      * @OA\Get(
@@ -130,7 +121,6 @@ class CategoryController extends Controller
      * )
      * )
      */
-
     public function index(Request $request)
     {
         try {
@@ -164,37 +154,18 @@ class CategoryController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-
-    /**
      * @OA\Post(
      * path="/api/categories",
      * operationId="storeCategory",
      * tags={"Categories"},
      * summary="Create a new category",
-     * description="Creates a new category with a name, description, and optional image.",
+     * description="Creates a new category with a name, slug, and description.",
      * @OA\RequestBody(
      * required=true,
-     * @OA\MediaType(
-     * mediaType="multipart/form-data",
-     * @OA\Schema(
+     * @OA\JsonContent(
      * @OA\Property(property="name", type="string", description="Category name", example="Electronics"),
      * @OA\Property(property="slug", type="string", description="URL-friendly slug", example="electronics"),
-     * @OA\Property(property="description", type="string", description="Category description", example="Electronic gadgets and devices."),
-     * @OA\Property(property="image", type="string", format="binary", description="Image file to upload."),
-     * )
+     * @OA\Property(property="description", type="string", description="Category description", example="Electronic gadgets and devices.")
      * )
      * ),
      * @OA\Response(
@@ -203,7 +174,7 @@ class CategoryController extends Controller
      * @OA\JsonContent(
      * @OA\Property(property="success", type="boolean", example=true),
      * @OA\Property(property="message", type="string", example="Category created successfully."),
-     * @OA\Property(property="data", ref="#/components/schemas/Category"),
+     * @OA\Property(property="data", ref="#/components/schemas/Category")
      * )
      * ),
      * @OA\Response(
@@ -220,21 +191,7 @@ class CategoryController extends Controller
     {
         try {
             $validated = $this->validateRequest($request);
-
-            $data = new Category();
-
-            HelperMethods::populateModelFields(
-                $data,
-                $request,
-                $validated,
-                $this->typeOfFields,
-                [
-                    'textFields' => $this->textFields,
-                 
-                ]
-            );
-
-            $data->save();
+            $data = Category::create($validated);
 
             return response()->json([
                 'success' => true,
@@ -247,8 +204,6 @@ class CategoryController extends Controller
     }
 
     /**
-     * Display the specified category.
-     *
      * @OA\Get(
      * path="/api/categories/{id}",
      * operationId="showCategory",
@@ -294,22 +249,12 @@ class CategoryController extends Controller
 
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param Category $category
-     */
-    public function edit(Category $category)
-    {
-        //
-    }
-
-    /**
-     * @OA\Post(
-     * path="/api/categories/{id}?_method=PUT",
+     * @OA\Put(
+     * path="/api/categories/{id}",
      * operationId="updateCategory",
      * tags={"Categories"},
      * summary="Update an existing category",
-     * description="Updates an existing category and its image.",
+     * description="Updates an existing category.",
      * @OA\Parameter(
      * name="id",
      * in="path",
@@ -317,23 +262,12 @@ class CategoryController extends Controller
      * description="ID of the category to update",
      * @OA\Schema(type="integer")
      * ),
-     * @OA\Parameter(
-     * name="_method",
-     * in="query",
-     * required=true,
-     * description="Use 'PUT' to override POST method for L5-Swagger.",
-     * @OA\Schema(type="string", default="PUT")
-     * ),
      * @OA\RequestBody(
      * required=true,
-     * @OA\MediaType(
-     * mediaType="multipart/form-data",
-     * @OA\Schema(
+     * @OA\JsonContent(
      * @OA\Property(property="name", type="string", description="New category name", example="Mobile Phones"),
      * @OA\Property(property="slug", type="string", description="New URL-friendly slug", example="mobile-phones"),
-     * @OA\Property(property="description", type="string", description="Updated category description", example="Latest smartphones and accessories."),
-     * @OA\Property(property="image", type="string", format="binary", description="New image file to upload."),
-     * )
+     * @OA\Property(property="description", type="string", description="Updated category description", example="Latest smartphones and accessories.")
      * )
      * ),
      * @OA\Response(
@@ -362,26 +296,9 @@ class CategoryController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            // Validate request
             $validated = $this->validateRequest($request);
-
-            // Retrieve the category by ID
             $data = Category::findOrFail($id);
-
-            // Populate model fields using helper method
-            HelperMethods::populateModelFields(
-                $data,
-                $request,
-                $validated,
-                $this->typeOfFields,
-                [
-                    'textFields' => $this->textFields,
-                  
-                ]
-            );
-
-            // Save updated model
-            $data->save();
+            $data->update($validated);
 
             return response()->json([
                 'success' => true,
@@ -399,7 +316,7 @@ class CategoryController extends Controller
      * operationId="deleteCategory",
      * tags={"Categories"},
      * summary="Delete a category",
-     * description="Deletes a category and its associated media.",
+     * description="Deletes a category.",
      * @OA\Parameter(
      * name="id",
      * in="path",
@@ -428,7 +345,6 @@ class CategoryController extends Controller
     public function destroy($id)
     {
         try {
-            // Attempt to delete the category
             $data = Category::findOrFail($id);
             $data->delete();
 
