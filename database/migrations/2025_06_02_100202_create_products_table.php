@@ -14,22 +14,19 @@ return new class extends Migration {
             $table->id();
 
             $table->string('name'); // Text field
+            $table->string('slug'); // Image field as string path
             $table->text('description')->nullable(); // Text field
             $table->string('image')->nullable(); // Image field as string path
             $table->decimal('price', 10, 2); // Numeric field
+            $table->decimal('old_price', 10, 2); // Numeric field
             $table->unsignedBigInteger('category_id'); // Numeric field (and likely a foreign key)
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
             $table->unsignedBigInteger('sub_category_id'); // Numeric field (and likely a foreign key)
             $table->foreign('sub_category_id')->references('id')->on('sub_categories')->onDelete('cascade');
-            $table->string('status'); // Text field
-            $table->string('arrival_status')->default('regular');
-            $table->string('cost_price'); // Text field
-            $table->integer('stock_quantity')->default(1); // Text field
-            $table->integer('sales')->default(0); // Text field
             $table->timestamps();
 
                // Add the composite index for the search fields
-            $table->index(['name', 'category_id', 'sub_category_id']); 
+            $table->index(['name', 'category_id', 'sub_category_id','price','slug']); 
         });
     }
 

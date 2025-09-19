@@ -16,7 +16,7 @@ class ProductUpdateService
      * @param array|null $images
      * @return Product
      */
-    public function updateProduct(Product $product, array $validatedData, ?array $images = null)
+     public static function updateProduct(Product $product, array $validatedData, ?array $images = null)
     {
         $product->update($validatedData);
 

@@ -9,11 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CategoryController extends Controller
 {
-    public function __construct()
-    {
-        // Apply JWT authentication and admin middleware only to store, update, and destroy methods
-        $this->middleware(['auth:api', 'admin'])->only(['store', 'update']);
-    }
+    
     protected array $typeOfFields = ['textFields', 'imageFields'];
 
     protected array $textFields = [

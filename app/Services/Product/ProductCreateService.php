@@ -15,7 +15,7 @@ class ProductCreateService
      * @param array $images
      * @return Product
      */
-    public function createProduct(array $validatedData, array $images = [])
+     public static function createProduct(array $validatedData, array $images = [])
     {
         $product = Product::create($validatedData);
 

@@ -10,38 +10,20 @@ use App\Helpers\HelperMethods;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Services\Product\ProductCreateService;
+use App\Services\Product\ProductShowService;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    protected $productCreationService;
-    protected $productUpdateService;
+    
+
 
     // I made dependecy injection here
 
 
-
-    //     public function __construct(
-    //     ProductCreateService $productCreationService,
-    //     ProductUpdateService $productUpdateService
-    // ) {
-    //     $this->productCreationService = $productCreationService;
-    //     $this->productUpdateService = $productUpdateService;
-    // }
-
-
-
-    public function __construct(
-        ProductCreateService $productCreationService,
-        ProductUpdateService $productUpdateService
-    ) {
-        $this->productCreationService = $productCreationService;
-        $this->productUpdateService = $productUpdateService;
-    }
-
-
-     /**
+   
+    /**
      * @OA\Get(
      * path="/api/products",
      * tags={"Products"},
@@ -95,19 +77,22 @@ class ProductController extends Controller
 
 
 
-    public function show($id)
+
+    public function show($identifier)
     {
         try {
-            $data = Product::with(['category', 'media', 'reviews.user'])->find($id);
+            $data = ProductShowService::findProduct($identifier);
+
             return response()->json([
                 'success' => true,
-                'message' => 'Data retrived successfully.',
+                'message' => 'Data retrieved successfully.',
                 'data' => $data,
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
-            return HelperMethods::handleException($e, 'Failed to update data.');
+            return HelperMethods::handleException($e, 'Failed to create product.');
         }
     }
+
 
 
     /**
@@ -119,7 +104,7 @@ class ProductController extends Controller
             $validatedData = $request->validated();
             $images = $request->file('images', []);
 
-            $product = $this->productCreationService->createProduct($validatedData, $images);
+            $product = ProductCreateService::createProduct($validatedData, $images);
 
             return response()->json([
                 'success' => true,
@@ -140,7 +125,7 @@ class ProductController extends Controller
             $validatedData = $request->validated();
             $images = $request->file('images', []);
 
-            $updatedProduct = $this->productUpdateService->updateProduct($product, $validatedData, $images);
+            $updatedProduct = ProductUpdateService::updateProduct($product, $validatedData, $images);
 
             return response()->json([
                 'success' => true,
