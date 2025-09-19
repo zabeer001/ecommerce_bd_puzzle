@@ -203,19 +203,19 @@ class CategoryController extends Controller
         }
     }
 
-    /**
+/**
      * @OA\Get(
-     * path="/api/categories/{id}",
+     * path="/api/categories/{identifier}",
      * operationId="showCategory",
      * tags={"Categories"},
      * summary="Get details of a single category",
-     * description="Fetch a single category by its ID.",
+     * description="Fetch a single category by its ID or slug.",
      * @OA\Parameter(
-     * name="id",
+     * name="identifier",
      * in="path",
      * required=true,
-     * description="ID of the category to fetch",
-     * @OA\Schema(type="integer")
+     * description="ID (integer) or slug (string) of the category to fetch",
+     * @OA\Schema(type="string")
      * ),
      * @OA\Response(
      * response=200,
@@ -235,9 +235,14 @@ class CategoryController extends Controller
      * )
      * )
      */
-    public function show(Category $category)
+    public function show($identifier)
     {
         try {
+            // Find the category by either its 'id' or 'slug'
+            $category = Category::where('id', $identifier)
+                ->orWhere('slug', $identifier)
+                ->firstOrFail();
+
             return response()->json([
                 'success' => true,
                 'data' => $category
@@ -246,7 +251,6 @@ class CategoryController extends Controller
             return HelperMethods::handleException($e, 'Failed to fetch category.');
         }
     }
-
 
     /**
      * @OA\Put(

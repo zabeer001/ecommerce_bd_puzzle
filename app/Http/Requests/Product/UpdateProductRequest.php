@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Product;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateProductRequest extends FormRequest
@@ -19,9 +20,17 @@ class UpdateProductRequest extends FormRequest
      */
     public function rules(): array
     {
+       
+        $productId = $this->route('product');
+
         return [
             'name' => 'nullable|string|max:255',
-            'slug' => 'nullable|string|max:255|unique:products,slug',
+            'slug' => [
+                'nullable',
+                'string',
+                'max:255',
+                Rule::unique('products', 'slug')->ignore($productId),
+            ],
             'status' => 'nullable|string|max:255',
             'arrival_status' => 'nullable|string|max:255',
             'description' => 'nullable|string',

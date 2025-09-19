@@ -183,22 +183,22 @@
                 }
             }
         },
-        "/api/categories/{id}": {
+        "/api/categories/{identifier}": {
             "get": {
                 "tags": [
                     "Categories"
                 ],
                 "summary": "Get details of a single category",
-                "description": "Fetch a single category by its ID.",
+                "description": "Fetch a single category by its ID or slug.",
                 "operationId": "showCategory",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "identifier",
                         "in": "path",
-                        "description": "ID of the category to fetch",
+                        "description": "ID (integer) or slug (string) of the category to fetch",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -229,7 +229,9 @@
                         "description": "Internal Server Error"
                     }
                 }
-            },
+            }
+        },
+        "/api/categories/{id}": {
             "put": {
                 "tags": [
                     "Categories"
@@ -363,25 +365,124 @@
                 "tags": [
                     "Products"
                 ],
-                "summary": "Retrieve a list of all products",
-                "description": "This endpoint retrieves all product records from the database.",
-                "operationId": "1bfaa78d1c2c3848ab8165c5dadcad3e",
+                "summary": "Get a paginated list of products",
+                "description": "Returns a paginated list of products, with optional search and filters.",
+                "operationId": "getProductsList",
+                "parameters": [
+                    {
+                        "name": "paginate_count",
+                        "in": "query",
+                        "description": "Number of products per page",
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search products by name or other attributes",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filter products by status",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "category_id",
+                        "in": "query",
+                        "description": "Filter products by category ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Successful operation",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/Product"
-                                    }
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/Product"
+                                                    }
+                                                },
+                                                "first_page_url": {
+                                                    "type": "string",
+                                                    "example": "http://localhost/api/products?page=1"
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "example": 3
+                                                },
+                                                "last_page_url": {
+                                                    "type": "string",
+                                                    "example": "http://localhost/api/products?page=3"
+                                                },
+                                                "next_page_url": {
+                                                    "type": "string",
+                                                    "example": "http://localhost/api/products?page=2",
+                                                    "nullable": true
+                                                },
+                                                "prev_page_url": {
+                                                    "type": "string",
+                                                    "example": null,
+                                                    "nullable": true
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 10
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 25
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "current_page": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "total_pages": {
+                                            "type": "integer",
+                                            "example": 3
+                                        },
+                                        "per_page": {
+                                            "type": "integer",
+                                            "example": 10
+                                        },
+                                        "total": {
+                                            "type": "integer",
+                                            "example": 25
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
                     },
-                    "401": {
-                        "description": "Unauthenticated"
+                    "500": {
+                        "description": "Internal Server Error"
                     }
                 }
             },
@@ -390,7 +491,7 @@
                     "Products"
                 ],
                 "summary": "Create a new product",
-                "description": "This endpoint allows the creation of a new product record, including image uploads.",
+                "description": "This endpoint allows the creation of a new product record, including multiple image uploads.",
                 "operationId": "e8185e307706e2cd84bbcf5171e2f09d",
                 "requestBody": {
                     "required": true,
@@ -430,7 +531,7 @@
                                         "format": "float",
                                         "nullable": true
                                     },
-                                    "images": {
+                                    "images[]": {
                                         "description": "Array of images to upload.",
                                         "type": "array",
                                         "items": {
@@ -450,7 +551,20 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/Product"
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Product created successfully."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Product"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
@@ -461,14 +575,66 @@
                 }
             }
         },
-        "/api/products/{id}?_method=PUT": {
-            "post": {
+        "/api/products/{identifier}": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Get a single product by ID or slug",
+                "description": "Fetch a product by its numeric ID or slug string.",
+                "operationId": "showProduct",
+                "parameters": [
+                    {
+                        "name": "identifier",
+                        "in": "path",
+                        "description": "ID (integer) or slug (string) of the product",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Product fetched successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data retrieved successfully."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Product"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Product not found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/api/products/{id}": {
+            "put": {
                 "tags": [
                     "Products"
                 ],
                 "summary": "Update an existing product",
-                "description": "This endpoint updates an existing product record, including images.",
-                "operationId": "dfdbb764a02c75636aba9d98b38f6b36",
+                "description": "This endpoint updates an existing product record, including new images. The request uses the PUT HTTP method.",
+                "operationId": "6a7e11900844cd85cff66e662b82bd4c",
                 "parameters": [
                     {
                         "name": "id",
@@ -486,41 +652,43 @@
                         "multipart/form-data": {
                             "schema": {
                                 "properties": {
-                                    "_method": {
-                                        "description": "Override to handle PUT/PATCH requests with form-data.",
-                                        "type": "string",
-                                        "enum": [
-                                            "PUT",
-                                            "PATCH"
-                                        ]
-                                    },
                                     "name": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "nullable": true
                                     },
                                     "slug": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "nullable": true
                                     },
                                     "description": {
                                         "type": "string",
                                         "nullable": true
                                     },
                                     "category_id": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "nullable": true
                                     },
                                     "sub_category_id": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "nullable": true
                                     },
                                     "price": {
                                         "type": "number",
-                                        "format": "float"
+                                        "format": "float",
+                                        "nullable": true
                                     },
                                     "old_price": {
                                         "type": "number",
                                         "format": "float",
                                         "nullable": true
                                     },
-                                    "images": {
-                                        "description": "Array of new images to upload.",
+                                    "image": {
+                                        "description": "The main product image (optional).",
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "images[]": {
+                                        "description": "An array of additional images to upload (optional).",
                                         "type": "array",
                                         "items": {
                                             "type": "string",
@@ -539,7 +707,20 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/Product"
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Product updated successfully."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Product"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
@@ -551,9 +732,7 @@
                         "description": "Validation error"
                     }
                 }
-            }
-        },
-        "/api/products/{id}": {
+            },
             "delete": {
                 "tags": [
                     "Products"
