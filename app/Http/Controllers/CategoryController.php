@@ -8,7 +8,6 @@ use App\Helpers\HelperMethods;
 use Symfony\Component\HttpFoundation\Response;
 
 
-
 class CategoryController extends Controller
 {
 
@@ -18,12 +17,8 @@ class CategoryController extends Controller
         'name',
         'description',
         'slug',
-        'type',
     ];
 
-    protected array $imageFields = [
-        'image',
-    ];
 
 
     /**
@@ -38,7 +33,6 @@ class CategoryController extends Controller
             'name' => 'required|string',
             'slug' => 'required|string',
             'description' => 'nullable|string',
-            'type' => 'nullable|string',
         ]);
     }
 
@@ -199,7 +193,6 @@ class CategoryController extends Controller
      * @OA\Property(property="name", type="string", description="Category name", example="Electronics"),
      * @OA\Property(property="slug", type="string", description="URL-friendly slug", example="electronics"),
      * @OA\Property(property="description", type="string", description="Category description", example="Electronic gadgets and devices."),
-     * @OA\Property(property="type", type="string", description="Category type", example="product"),
      * @OA\Property(property="image", type="string", format="binary", description="Image file to upload."),
      * )
      * )
@@ -237,7 +230,7 @@ class CategoryController extends Controller
                 $this->typeOfFields,
                 [
                     'textFields' => $this->textFields,
-                    'imageFields' => $this->imageFields,
+                 
                 ]
             );
 
@@ -257,34 +250,34 @@ class CategoryController extends Controller
      * Display the specified category.
      *
      * @OA\Get(
-     *     path="/api/categories/{id}",
-     *     operationId="showCategory",
-     *     tags={"Categories"},
-     *     summary="Get details of a single category",
-     *     description="Fetch a single category by its ID.",
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the category to fetch",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Category fetched successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", ref="#/components/schemas/Category")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Category not found"
-     *     ),
-     *     @OA\Response(
-     *         response=500,
-     *         description="Internal Server Error"
-     *     )
+     * path="/api/categories/{id}",
+     * operationId="showCategory",
+     * tags={"Categories"},
+     * summary="Get details of a single category",
+     * description="Fetch a single category by its ID.",
+     * @OA\Parameter(
+     * name="id",
+     * in="path",
+     * required=true,
+     * description="ID of the category to fetch",
+     * @OA\Schema(type="integer")
+     * ),
+     * @OA\Response(
+     * response=200,
+     * description="Category fetched successfully",
+     * @OA\JsonContent(
+     * @OA\Property(property="success", type="boolean", example=true),
+     * @OA\Property(property="data", ref="#/components/schemas/Category")
+     * )
+     * ),
+     * @OA\Response(
+     * response=404,
+     * description="Category not found"
+     * ),
+     * @OA\Response(
+     * response=500,
+     * description="Internal Server Error"
+     * )
      * )
      */
     public function show(Category $category)
@@ -339,7 +332,6 @@ class CategoryController extends Controller
      * @OA\Property(property="name", type="string", description="New category name", example="Mobile Phones"),
      * @OA\Property(property="slug", type="string", description="New URL-friendly slug", example="mobile-phones"),
      * @OA\Property(property="description", type="string", description="Updated category description", example="Latest smartphones and accessories."),
-     * @OA\Property(property="type", type="string", description="Updated category type", example="product"),
      * @OA\Property(property="image", type="string", format="binary", description="New image file to upload."),
      * )
      * )
@@ -384,7 +376,7 @@ class CategoryController extends Controller
                 $this->typeOfFields,
                 [
                     'textFields' => $this->textFields,
-                    'imageFields' => $this->imageFields,
+                  
                 ]
             );
 

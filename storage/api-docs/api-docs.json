@@ -144,11 +144,6 @@
                                         "type": "string",
                                         "example": "Electronic gadgets and devices."
                                     },
-                                    "type": {
-                                        "description": "Category type",
-                                        "type": "string",
-                                        "example": "product"
-                                    },
                                     "image": {
                                         "description": "Image file to upload.",
                                         "type": "string",
@@ -337,11 +332,6 @@
                                         "description": "Updated category description",
                                         "type": "string",
                                         "example": "Latest smartphones and accessories."
-                                    },
-                                    "type": {
-                                        "description": "Updated category type",
-                                        "type": "string",
-                                        "example": "product"
                                     },
                                     "image": {
                                         "description": "New image file to upload.",
