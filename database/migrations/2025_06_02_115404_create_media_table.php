@@ -12,11 +12,13 @@ return new class extends Migration {
     {
         Schema::create('media', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('product_id'); // Foreign key to products table
-            $table->string('file_path'); // Path to the uploaded image
-            // Optional: Add foreign key constraint
-            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
+            $table->unsignedBigInteger('product_id');
+            $table->string('file_path');
             $table->timestamps();
+
+            // Add the foreign key constraint and index at the end
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
+            $table->index('product_id');
         });
     }
 

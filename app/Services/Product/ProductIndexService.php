@@ -18,6 +18,7 @@ class ProductIndexService
         $query = Product::with([
             'media',
             'category:id,name',
+            'subCategory:id,name'
         ])
             ->orderBy('updated_at', 'desc');
 

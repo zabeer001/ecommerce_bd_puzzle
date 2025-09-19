@@ -16,18 +16,23 @@ class ProductUpdateService
      * @param array|null $images
      * @return Product
      */
-     public static function updateProduct(Product $product, array $validatedData, ?array $images = null)
+    public static function updateProduct(Product $product, array $validatedData, ?array $images = null)
     {
+        // Update the main product data first.
         $product->update($validatedData);
 
-        if ($images !== null) {
-            // Delete all old images
-            $product->media()->each(function ($media) {
-                HelperMethods::deleteImage($media->file_path);
-                $media->delete();
-            });
+        // Only proceed with image updates if new images are provided.
+        if ($images !== null && count($images) > 0) {
 
-            // Upload new images
+            // Delete all existing media records and their corresponding files for this product.
+            foreach ($product->media as $mediaItem) {
+                // Delete the physical file from storage.
+                HelperMethods::deleteImage($mediaItem->file_path);
+                // Delete the media record from the database.
+                $mediaItem->delete();
+            }
+
+            // Upload and create new media records for the product.
             foreach ($images as $image) {
                 $newImagePath = HelperMethods::uploadImage($image);
                 if ($newImagePath) {
@@ -39,6 +44,6 @@ class ProductUpdateService
             }
         }
 
-        return $product->load('media');
+        return $product->load('media'); // Eager load media for the response
     }
 }

@@ -21,6 +21,7 @@ class UpdateProductRequest extends FormRequest
     {
         return [
             'name' => 'nullable|string|max:255',
+            'slug' => 'nullable|string|max:255|unique:products,slug',
             'status' => 'nullable|string|max:255',
             'arrival_status' => 'nullable|string|max:255',
             'description' => 'nullable|string',

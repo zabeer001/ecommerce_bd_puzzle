@@ -2,27 +2,21 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Category;
-use Illuminate\Support\Str;
+use App\Models\SubCategory;
+use Database\Factories\CategoryFactory;
+use Illuminate\Database\Seeder;
 
 class CategorySeeder extends Seeder
 {
-    public function run(): void
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
     {
-        $categories = [
-            ['name' => 'Electronics', 'type' => 'Products'],
-            ['name' => 'Clothing', 'type' => 'Fashion'],
-            ['name' => 'Home & Kitchen', 'type' => 'Products'],
-            ['name' => 'Beauty & Personal Care', 'type' => 'Fashion'],
-        ];
-
-        foreach ($categories as $cat) {
-            Category::create([
-                'name' => $cat['name'],
-                'description' => 'Explore our wide selection of ' . Str::lower($cat['name']) . '.',
-                'type' => $cat['type'],
-            ]);
-        }
+        // Create 5 fake categories using the factory
+        Category::factory()->count(5)->create();
     }
 }

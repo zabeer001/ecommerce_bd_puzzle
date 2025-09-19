@@ -19,14 +19,12 @@ class Product extends Model
     protected $fillable =
     [
         'name',
+        'slug',
         'description',
         'category_id',
         'sub_category_id', // <-- add this
         'price',
-        'cost_price',
-        'stock_quantity',
-        'status',
-        'arrival_status'
+        'old_price',
     ];
 
     public function category()

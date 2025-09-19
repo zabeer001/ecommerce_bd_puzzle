@@ -18,7 +18,7 @@ class ProductShowService
      */
      public static function findProduct($identifier)
     {
-        $product = Product::with(['category', 'media'])
+        $product = Product::with(['category', 'subCategory', 'media'])
             ->when(is_numeric($identifier), function ($query) use ($identifier) {
                 return $query->where('id', $identifier);
             }, function ($query) use ($identifier) {
